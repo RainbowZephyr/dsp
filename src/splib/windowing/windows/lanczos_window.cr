@@ -10,7 +10,7 @@ class Lanczos < Window
     Math.sin(pi_x) / pi_x
   end
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = (size-1)
     Array.new(size) do |n|
       x = ((2.0*n)/size_min_1) - 1

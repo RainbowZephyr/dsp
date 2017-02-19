@@ -16,7 +16,7 @@ class Tukey < Window
     super(size)
   end
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = size - 1
     left = (@alpha * (size - 1) / 2.0).to_i
     right = size_min_1 - left  # ((size - 1) * (1.0 - (@alpha / 2.0))).ceil.to_i

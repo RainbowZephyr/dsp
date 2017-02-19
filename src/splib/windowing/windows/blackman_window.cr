@@ -9,7 +9,7 @@ class Blackman < Window
   A1 = 0.5
   A2 = ALPHA / 2.0
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = size - 1
 
     Array.new(size) do |n|

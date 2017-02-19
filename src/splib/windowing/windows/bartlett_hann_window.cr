@@ -8,7 +8,7 @@ class BartlettHann < Window
   A1 = 0.48
   A2 = 0.38
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = (size - 1)
 
     Array.new(size) do |n|

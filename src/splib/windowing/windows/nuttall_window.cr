@@ -9,7 +9,7 @@ class Nuttall < Window
   A2 = 0.144232
   A3 = 0.012604
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = size - 1
     Array.new(size) do |n|
       x1 = (TWO_PI * n)/size_min_1

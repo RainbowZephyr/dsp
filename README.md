@@ -12,6 +12,11 @@ dependencies:
     github: https://github.com/jamestunnell/splib
 ```
 
+## Features
+
+Added in version 0.1.0:
+* Window class and subclasses based on window functions
+
 ## Usage
 
 ```crystal

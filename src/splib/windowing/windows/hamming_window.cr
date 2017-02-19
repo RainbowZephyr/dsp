@@ -4,7 +4,7 @@ class Window
 # Produces a Hamming window of a given size (number of samples).
 # For more info, see https://en.wikipedia.org/wiki/Window_function#Hamming_window.
 class Hamming < Window
-  def produce_data(size)
+  def window(size)
     alpha = 0.54
     beta = 1.0 - alpha
     size_min_1 = size - 1

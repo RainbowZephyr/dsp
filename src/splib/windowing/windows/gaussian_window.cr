@@ -13,7 +13,7 @@ class Gaussian < Window
     super(size)
   end
 
-  def produce_data(size)
+  def window(size)
     size_min_1_over_2 = (size - 1) / 2.0
     Array.new(size) do |n|
       a = (n - size_min_1_over_2) / (@sigma * size_min_1_over_2)

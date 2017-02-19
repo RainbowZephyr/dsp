@@ -9,7 +9,7 @@ class BlackmanHarris < Window
   A2 = 0.14128
   A3 = 0.01168
 
-  def produce_data(size)
+  def window(size)
     size_min_1 = size - 1
 
     Array.new(size) do |n|
