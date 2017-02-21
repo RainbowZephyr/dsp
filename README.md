@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jamestunnell/splib.svg?branch=master)](https://travis-ci.org/jamestunnell/splib)
+
 # splib
 
 Signal processing library written in Crystal (high-level and fast).
