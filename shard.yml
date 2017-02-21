@@ -4,6 +4,8 @@ version: 0.1.0
 authors:
   - James Tunnell <jamestunnell@gmail.com>
 
+description: Signal processing library
+
 crystal: 0.20.5
 
 license: MIT
