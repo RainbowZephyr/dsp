@@ -1,7 +1,6 @@
 module Splib
 
-# General FIR filter class. Contains the filter kernel and performs
-# convolution.
+# General FIR filter class. Contains the filter kernel and performs convolution.
 class FirFilter
 
   getter :kernel, :order, :sample_rate
@@ -10,8 +9,8 @@ class FirFilter
   # @param [Array] kernel Filter kernel values.
   # @param [Numeric] sample_rate The sample rate the filter operates at.
   def initialize(kernel : Array(Float64), sample_rate : Float64)
-    if kernel.empty?
-      raise ArgumentError.new("Kernel is empty")
+    if kernel.size < 2
+      raise ArgumentError.new("Kernel size #{kernel.size} must be at least 2")
     end
 
     @kernel = kernel
@@ -39,26 +38,6 @@ class FirFilter
       end
       sum
     end
-
-    # (0...@kernel_size).each do |i|
-    #   sum = 0.0
-    #   # convolve the input with the filter kernel
-    #   (0...i).each do |j|
-    #     sum += (input[j] * @kernel[@kernel_size - (1 + i - j)])
-    #   end
-    #   output[i] = sum
-    # end
-    #
-    # (@kernel_size...input.size).each do |i|
-    #   sum = 0.0
-    #   # convolve the input with the filter kernel
-    #   (0...@kernel_size).each do |j|
-    #     sum += (input[i-j] * @kernel[j])
-    #   end
-    #   output[i] = sum
-    # end
-    #
-    # return output
   end
 
   def freq_response
@@ -89,39 +68,36 @@ class FirFilter
       response[frequency] = output[n]
     end
 
-    ## amplitude = 2 * f[j] / size
-    #output = output.map {|x| 2 * x / output.size }
-
     return response
   end
 
-  def plot_freq_response
-    _plot_freq_response_db(false)
-  end
-
-  def plot_freq_response_db
-    _plot_freq_response_db(true)
-  end
-
-  # Calculate the filter frequency magnitude response and
-  # graph the results.
-  # @param [Numeric] use_db Calculate magnitude in dB.
-  def _plot_freq_response_db(use_db)
-    # plotter = Plotter.new(
-    #   :title => "Freq magnitude response of #{@order}-order FIR filter",
-    #   :xlabel => "frequency (Hz)",
-    #   :ylabel => "magnitude#{use_db ? " (dB)" : ""}",
-    #   :logscale => "x"
-    # )
-    #
-    # plotter.plot_2d "" => freq_response(use_db)
-    File.open("tmp.dat", "wb") do |f|
-      _freq_response(use_db).each do |freq, magn|
-        f.puts("#{freq}\t#{magn}")
-      end
-    end
-    `graph tmp.dat --output-format X`
-  end
+  # def plot_freq_response
+  #   _plot_freq_response_db(false)
+  # end
+  #
+  # def plot_freq_response_db
+  #   _plot_freq_response_db(true)
+  # end
+  #
+  # # Calculate the filter frequency magnitude response and
+  # # graph the results.
+  # # @param [Numeric] use_db Calculate magnitude in dB.
+  # def _plot_freq_response_db(use_db)
+  #   # plotter = Plotter.new(
+  #   #   :title => "Freq magnitude response of #{@order}-order FIR filter",
+  #   #   :xlabel => "frequency (Hz)",
+  #   #   :ylabel => "magnitude#{use_db ? " (dB)" : ""}",
+  #   #   :logscale => "x"
+  #   # )
+  #   #
+  #   # plotter.plot_2d "" => freq_response(use_db)
+  #   File.open("tmp.dat", "wb") do |f|
+  #     _freq_response(use_db).each do |freq, magn|
+  #       f.puts("#{freq}\t#{magn}")
+  #     end
+  #   end
+  #   `graph tmp.dat --output-format X`
+  # end
 end
 
 end
