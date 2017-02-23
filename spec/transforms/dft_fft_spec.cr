@@ -1,16 +1,18 @@
 require "../spec_helper"
 
-def freq_percent_error(tgt_freq, fft_output, sample_rate)
-  first_half_fft_magnitudes = fft_output[0...(fft_output.size / 2)].map { |x| x.abs }
+def is_biggest_bin_also_closest?(tgt_freq, fft_output, sample_rate)
+  half_fft_output = fft_output[0...(fft_output.size / 2)]
 
-  magn_response = {} of Float64 => Float64
-  first_half_fft_magnitudes.each_index do |n|
-    f = (sample_rate * n) / fft_output.size
-    magn_response[f] = first_half_fft_magnitudes[n]
+  magnitudes = half_fft_output.map {|x| x.abs}
+  biggest_bin = magnitudes.index(magnitudes.max)
+
+  freq_diffs = (0...(fft_output.size / 2)).map do |idx|
+    f = (sample_rate * idx) / fft_output.size
+    (f - tgt_freq).abs
   end
+  closest_bin = freq_diffs.index(freq_diffs.min)
 
-  max_freq = magn_response.max_by {|f,magn| magn }[0]
-  return (max_freq - tgt_freq).abs / tgt_freq
+  return closest_bin == biggest_bin
 end
 
 describe "DFT,FFT" do
@@ -41,8 +43,7 @@ describe "DFT,FFT" do
           x.should be_close(dft_output[idx], 1e-12)
         end
 
-        percent_err = freq_percent_error(freq, dft_output, sample_rate)
-        percent_err.abs.should be <= 0.1
+        is_biggest_bin_also_closest?(freq, dft_output, sample_rate).should be_truthy
       end
     end
 
@@ -56,8 +57,8 @@ describe "DFT,FFT" do
           x.should be_close(dft_inv[idx], 1e-12)
         end
 
-        percent_err = freq_percent_error(freq, DFT.forward(dft_inv), sample_rate)
-        percent_err.abs.should be <= 0.1
+        dft_output2 = DFT.forward(dft_inv)
+        is_biggest_bin_also_closest?(freq, dft_output2, sample_rate).should be_truthy
       end
     end
   end
