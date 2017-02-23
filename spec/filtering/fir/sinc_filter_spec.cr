@@ -9,7 +9,7 @@ describe SincFilter do
     it "should raise ArgumentError" do
       [1,3,5,7].each do |order|
         expect_raises {
-          SincFilter.new(order: order, sample_rate: SAMPLE_RATE, cutoff_freq: 100.0,
+          SincFilter.new(order: order, sample_rate: SAMPLE_RATE, cutoff: 100.0,
             window_class: WINDOW_CLASS)
         }
       end
@@ -20,7 +20,7 @@ describe SincFilter do
     it "should raise ArgumentError" do
       [-1.0, 0.0].each do |sample_rate|
         expect_raises {
-          SincFilter.new(order: 16, sample_rate: sample_rate, cutoff_freq: 100.0,
+          SincFilter.new(order: 16, sample_rate: sample_rate, cutoff: 100.0,
             window_class: WINDOW_CLASS)
         }
       end
@@ -29,9 +29,9 @@ describe SincFilter do
 
   context "cutoff freq greater than half sample rate" do
     it "should raise ArgumentError" do
-      [(SAMPLE_RATE / 2.0) + 1.0, SAMPLE_RATE * 0.6].each do |cutoff_freq|
+      [(SAMPLE_RATE / 2.0) + 1.0, SAMPLE_RATE * 0.6].each do |cutoff|
         expect_raises {
-          SincFilter.new(order: 16, sample_rate: SAMPLE_RATE, cutoff_freq: cutoff_freq,
+          SincFilter.new(order: 16, sample_rate: SAMPLE_RATE, cutoff: cutoff,
             window_class: WINDOW_CLASS)
         }
       end
@@ -41,11 +41,11 @@ describe SincFilter do
   [60,80,100,120,140].each do |order|
     (Scale.exponential((SAMPLE_RATE/16)..(SAMPLE_RATE/8), 3)).each do |cutoff|
 
-      filter = SincFilter.new(order: order, cutoff_freq: cutoff, sample_rate: SAMPLE_RATE,
+      filter = SincFilter.new(order: order, cutoff: cutoff, sample_rate: SAMPLE_RATE,
         window_class: WINDOW_CLASS)
 
       describe "#highpass" do
-        it "should keep magnitude below-20 dB below cutoff and close to 0 dB above cutoff" do
+        it "should restrict magnitude below cutoff and preserve it above cutoff" do
           filter.highpass_fir.freq_response_db.each do |freq, magnitude_db|
             if freq <= (0.6 * cutoff)
               magnitude_db.should be < -20.0
@@ -61,7 +61,7 @@ describe SincFilter do
       end
 
       describe "#lowpass" do
-        it "should keep magnitude below-20 dB above cutoff and close to 0 dB below cutoff" do
+        it "should preserve magnitude below cutoff and restrict it above cutoff" do
           filter.lowpass_fir.freq_response_db.each do |freq, magnitude_db|
             if freq >= (1.4 * cutoff)
               magnitude_db.should be < -20.0

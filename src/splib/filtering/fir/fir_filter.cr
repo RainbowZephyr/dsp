@@ -17,7 +17,7 @@ class FirFilter
     @kernel_size = kernel.size.as(Int32)
     @order = (@kernel_size - 1).as(Int32)
 
-    verify_positive_sample_rate(sample_rate)
+    verify_positive(sample_rate)
     @sample_rate = sample_rate
   end
 

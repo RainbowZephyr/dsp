@@ -8,32 +8,28 @@ module Splib
 # @author James Tunnell
 #
 class SincFilter
-  getter :lowpass_fir, :highpass_fir
+  getter :order, :sample_rate, :cutoff, :window_class, :lowpass_fir, :highpass_fir
 
   # Given a filter order, cutoff frequency, sample rate, and window class,
   # develop a FIR filter kernel that can be used for lowpass filtering.
-  def initialize(order : Int32, sample_rate : Float64, cutoff_freq : Float64, @window_class : Window.class)
-    if (order % 2) != 0
-      raise ArgumentError.new("Order #{order} is not even")
-    end
+  def initialize(order : Int32, sample_rate : Float64, cutoff : Float64, @window_class : Window.class)
+    verify_even(order)
     @order = order
     size = @order + 1
 
-    verify_positive_sample_rate(sample_rate)
+    verify_positive(sample_rate)
     @sample_rate = sample_rate
 
-    if cutoff_freq <= 0.0
-      raise ArgumentError.new("Cutoff frequency #{cutoff_freq} is not positive")
-    end
-    @cutoff_freq = cutoff_freq
+    verify_positive(cutoff)
+    @cutoff = cutoff
 
     half_sample_rate = @sample_rate / 2.0
-    if @cutoff_freq > half_sample_rate
-      msg = "Cutoff freq #{cutoff_freq} is greater than half the sample rate (#{half_sample_rate})"
+    if @cutoff > half_sample_rate
+      msg = "Cutoff freq #{cutoff} is greater than half the sample rate (#{half_sample_rate})"
       raise ArgumentError.new(msg)
     end
 
-    transition_freq = @cutoff_freq / @sample_rate
+    transition_freq = @cutoff / @sample_rate
     b = TWO_PI * transition_freq
 
     # make FIR filter kernels for lowpass and highpass
