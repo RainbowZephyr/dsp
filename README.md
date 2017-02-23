@@ -16,7 +16,7 @@ dependencies:
 
 ## Features
 
-* FFT transform (forward and inverse)
+* DFT and FFT transforms (forward and inverse)
 * Windows (Blackman, Hamming, etc.)
 * Windowed sinc filtering (lowpass, highpass, bandpass, bandstop)
 
