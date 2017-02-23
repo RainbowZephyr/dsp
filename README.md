@@ -16,8 +16,9 @@ dependencies:
 
 ## Features
 
-Added in version 0.1.0:
-* Window class and subclasses based on window functions
+* FFT transform (forward and inverse)
+* Windows (Blackman, Hamming, etc.)
+* Windowed sinc filtering (lowpass, highpass, bandpass, bandstop)
 
 ## Usage
 
