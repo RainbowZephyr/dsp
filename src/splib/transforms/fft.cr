@@ -8,7 +8,7 @@ class FFT
 
   # Convert real input array to complex input array and pass along to that overload
   def self.forward(input : Array(Float64))
-    FFT.forward(input.map {|f| Complex.new(f,0.0) })
+    FFT.forward(input.map {|f| Complex.new(f, 0.0) })
   end
 
   # Forward Radix-2 FFT transform using decimation-in-time. Operates on an array of complex values
@@ -19,17 +19,39 @@ class FFT
   def self.forward(input : Array(Complex))
     npadding = Math.pw2ceil(input.size) - input.size
     if npadding > 0
-      input += Array.new(npadding){ Complex.new(0.0,0.0) }
+      input += Array.new(npadding){ Complex.new(0.0, 0.0) }
     end
-    n = input.size
+    return fft_core(input,true)
+  end
 
-    power_of_two = Math.log2(n).to_i
+  # Inverse Radix-2 FFT transform. Leverages the forward FFT, but scales the result by input size.
+  def self.inverse(input : Array(Complex))
+    n = input.size
+    return fft_core(input,false).map {|val| val / n }
+  end
+
+  private def self.get_bit_reversed_addr(i, nbits)
+    i.to_s(2).rjust(nbits, '0').reverse.to_i(2)
+  end
+
+  private def self.bit_reverse_order(input, m)
+    Array.new(input.size){|i| input[get_bit_reversed_addr(i, m)] }
+  end
+
+  private def self.fft_core(input, forward : Bool)
+    n = input.size
+    power_of_two = Math.log2(n)
+    if power_of_two.floor != power_of_two
+      raise ArgumentError.new("input size #{n} is not power of 2")
+    end
+    power_of_two = power_of_two.to_i
     x = bit_reverse_order(input, power_of_two)
 
+    sin_mul = forward ? -1.0 : 1.0
     (1..power_of_two).each do |s|
       m = 2**s
       y = TWO_PI/m
-      wm = Complex.new(Math.cos(y), -Math.sin(y))
+      wm = Complex.new(Math.cos(y), sin_mul * Math.sin(y))
 
       0.step(to: n-1, by: m) do |k|
 
@@ -43,27 +65,8 @@ class FFT
         end
       end
     end
+
     return x
-  end
-
-  # Inverse Radix-2 FFT transform. Leverages the forward FFT, but scales the result by input size.
-  def self.inverse(input : Array(Complex))
-    n = input.size
-    power_of_two = Math.log2(n)
-    if power_of_two.floor != power_of_two
-      raise ArgumentError.new("input size #{n} is not power of 2")
-    end
-
-    x = FFT.forward(input)
-    return x.map {|val| val / n }
-  end
-
-  private def self.get_bit_reversed_addr(i, nbits)
-    i.to_s(2).rjust(nbits, '0').reverse.to_i(2)
-  end
-
-  private def self.bit_reverse_order(input, m)
-    Array.new(input.size){|i| input[get_bit_reversed_addr(i, m)] }
   end
 end
 

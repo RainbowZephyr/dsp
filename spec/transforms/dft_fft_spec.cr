@@ -56,8 +56,7 @@ describe "DFT,FFT" do
           x.should be_close(dft_inv[idx], 1e-12)
         end
 
-        dft_output2 = DFT.forward(dft_inv)
-        percent_err = freq_percent_error(freq, dft_output2, sample_rate)
+        percent_err = freq_percent_error(freq, DFT.forward(dft_inv), sample_rate)
         percent_err.abs.should be <= 0.1
       end
     end
