@@ -21,14 +21,14 @@ class Sig
     Sig.new(@data.clone, @sample_rate)
   end
 
-  # Signal duration in seconds.
+  # Sig duration in seconds.
   def duration
     return @data.size.to_f / @sample_rate
   end
 
   # Calculate the energy in current signal data.
   def energy
-    return @data.inject(0.0){|sum,x| sum + (x * x)}
+    return @data.map {|x| x*x }.sum
   end
 
   # Calculate signal RMS (root-mean square), also known as quadratic mean, a
@@ -37,7 +37,7 @@ class Sig
     Math.sqrt(energy / size)
   end
 
-  # Operate on copy of the Signal object with the absolute value function.
+  # Operate on copy of the Sig object with the absolute value function.
   def abs
     Sig.new(@data.map {|x| x.abs}, @sample_rate)
   end
@@ -56,7 +56,7 @@ class Sig
     end
   end
 
-  private def check_other_signal_compatibility(other : Signal)
+  private def check_other_signal_compatibility(other : Sig)
     if other.size != size
       msg = "Other signal size #{other.size} does not equal current signal size #{size}"
       raise ArgumentError.new(msg)
@@ -72,36 +72,36 @@ class Sig
     Sig.new(@data.map {|x| x + other}, @sample_rate)
   end
 
-  def +(other : Signal)
+  def +(other : Sig)
     check_other_signal_compatibility(other)
-    Sig.new(Array.new(size){|i| @data[i] + other[i]}, @sample_rate)
+    Sig.new(Array.new(size){|i| @data[i] + other.data[i]}, @sample_rate)
   end
 
   def -(other : Float64)
     Sig.new(@data.map {|x| x - other}, @sample_rate)
   end
 
-  def -(other : Signal)
+  def -(other : Sig)
     check_other_signal_compatibility(other)
-    Sig.new(Array.new(size){|i| @data[i] - other[i]}, @sample_rate)
+    Sig.new(Array.new(size){|i| @data[i] - other.data[i]}, @sample_rate)
   end
 
   def *(other : Float64)
     Sig.new(@data.map {|x| x * other}, @sample_rate)
   end
 
-  def *(other : Signal)
+  def *(other : Sig)
     check_other_signal_compatibility(other)
-    Sig.new(Array.new(size){|i| @data[i] * other[i]}, @sample_rate)
+    Sig.new(Array.new(size){|i| @data[i] * other.data[i]}, @sample_rate)
   end
 
   def /(other : Float64)
     Sig.new(@data.map {|x| x / other}, @sample_rate)
   end
 
-  def /(other : Signal)
+  def /(other : Sig)
     check_other_signal_compatibility(other)
-    Sig.new(Array.new(size){|i| @data[i] / other[i]}, @sample_rate)
+    Sig.new(Array.new(size){|i| @data[i] / other.data[i]}, @sample_rate)
   end
 end
 

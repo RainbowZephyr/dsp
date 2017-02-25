@@ -55,6 +55,20 @@ describe Signal do
     end
   end
 
+  describe "#energy" do
+    it "should compute sum of square of signal samples" do
+      s = Sig.new([2.0,3.0,4.0], sample_rate)
+      s.energy.should eq(4.0 + 9.0 + 16.0)
+    end
+  end
+
+  describe "#rms" do
+    it "should compute square root of energy over size" do
+      s = Sig.new([2.0,3.0,4.0], sample_rate)
+      s.rms.should eq(Math.sqrt(s.energy / s.size))
+    end
+  end
+
   describe "#max_magnitude" do
     it "should return largest magnitude of all the signal data" do
       {
@@ -97,6 +111,78 @@ describe Signal do
 
         s3 = Sig.new([0.5, -1.0, 2.0], sample_rate)
         s1.normalize(2.0).should eq(s3)
+      end
+    end
+  end
+
+  describe "operators" do
+    d1 = [5.0,4.0,3.0]
+    d2 = [3.0,4.0,5.0]
+
+    s1 = Sig.new(d1,sample_rate)
+    s2 = Sig.new(d2,sample_rate)
+
+    describe "#+" do
+      context "given float value" do
+        it "should add the value to each sample value and create a new signal" do
+          expected_data = [d1[0] + 1.0, d1[1] + 1.0, d1[2] + 1.0]
+          (s1 + 1.0).data.should eq(expected_data)
+        end
+      end
+
+      context "given signal" do
+        it "should add the sample values from both signals and create a new signal" do
+          expected_data = [d1[0] + d2[0], d1[1] + d2[1], d1[2] + d2[2]]
+          (s1 + s2).data.should eq(expected_data)
+        end
+      end
+    end
+
+    describe "#-" do
+      context "given float value" do
+        it "should subtract the value to each sample value and create a new signal" do
+          expected_data = [d1[0] - 1.0, d1[1] - 1.0, d1[2] - 1.0]
+          (s1 - 1.0).data.should eq(expected_data)
+        end
+      end
+
+      context "given signal" do
+        it "should add the sample values from both signals and create a new signal" do
+          expected_data = [d1[0] - d2[0], d1[1] - d2[1], d1[2] - d2[2]]
+          (s1 - s2).data.should eq(expected_data)
+        end
+      end
+    end
+
+    describe "#*" do
+      context "given float value" do
+        it "should add the value to each sample value and create a new signal" do
+          expected_data = [d1[0] * 1.2, d1[1] * 1.2, d1[2] * 1.2]
+          (s1 * 1.2).data.should eq(expected_data)
+        end
+      end
+
+      context "given signal" do
+        it "should add the sample values from both signals and create a new signal" do
+          expected_data = [d1[0] * d2[0], d1[1] * d2[1], d1[2] * d2[2]]
+          (s1 * s2).data.should eq(expected_data)
+        end
+      end
+    end
+
+    describe "#/" do
+      context "given float value" do
+        it "should subtract the value to each sample value and create a new signal" do
+          expected_data = [d1[0] / 1.2, d1[1] / 1.2, d1[2] / 1.2]
+          (s1 / 1.2).data.should eq(expected_data)
+        end
+      end
+
+      context "given signal" do
+        it "should add the sample values from both signals and create a new signal" do
+          expected_data = [d1[0] / d2[0], d1[1] / d2[1], d1[2] / d2[2]]
+          (s1 / s2).data.should eq(expected_data)
+        end
       end
     end
   end
