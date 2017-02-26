@@ -12,8 +12,9 @@ class Scale
     value = range.begin
 
     Array.new(n_points) do |i|
-      points[i] = value
+      x = value
       value += incr
+      x
     end
   end
 
