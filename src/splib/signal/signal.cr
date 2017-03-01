@@ -103,6 +103,13 @@ class Sig
     check_other_signal_compatibility(other)
     Sig.new(Array.new(size){|i| @data[i] / other.data[i]}, @sample_rate)
   end
+
+  def extrema
+    if @extrema.nil?
+      @extrema = Extrema(Float64).new @data
+    end
+    return @extrema
+  end
 end
 
 end

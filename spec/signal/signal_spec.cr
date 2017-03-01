@@ -1,9 +1,9 @@
 require "../spec_helper"
 
-sample_rate = 40.0
-sample_period = 1.0 / sample_rate
-
 describe Signal do
+  sample_rate = 40.0
+  sample_period = 1.0 / sample_rate
+
   describe "#size" do
     it "should be equal to signal data size" do
       [0,1,5,27].each do |nsamples|
@@ -184,6 +184,14 @@ describe Signal do
           (s1 / s2).data.should eq(expected_data)
         end
       end
+    end
+  end
+
+  describe "#extrema" do
+    it "should return Extrema object made from signal data" do
+      data = [-1.4, -3.57, 1.61, -3.81, 3.66, 4.68, 3.48, -3.5, 4.18, -2.12]
+      s = Sig.new(data, sample_rate)
+      s.extrema.should eq(Extrema(Float64).new(data))
     end
   end
 end

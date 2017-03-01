@@ -11,6 +11,10 @@ class Extrema(T)
     compute_extrema(samples)
   end
 
+  def ==(other : Extrema(T))
+    (@minima == other.minima) && (@maxima == other.maxima)
+  end
+
   private def compute_extrema(samples : Array(T))
     global_min_idx = 0
     global_min_val = samples[0]
