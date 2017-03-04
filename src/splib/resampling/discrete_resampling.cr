@@ -5,8 +5,8 @@ module Splib
 module DiscreteResampling
 
   def self.upsample(input : Array(Float64), sample_rate : Float64, upsample_factor : Int32, filter_order : Int32)
-    raise ArgumentError.new("input.size is less than four") if input.size < 4
-    raise ArgumentError.new("upsample_factor is < 2") if  upsample_factor < 2
+    raise ArgumentError.new("input size #{input.size} is less than four") if input.size < 4
+    verify_positive(upsample_factor)
     verify_positive(sample_rate)
 
     output = Array(Float64).new((upsample_factor * input.size).to_i, 0.0)
@@ -30,14 +30,18 @@ module DiscreteResampling
     return Array(Float64).new(npadding_needed, 0.0)
   end
 
-  def self.downsample(input : Array(Float64), sample_rate : Float64, downsample_factor : Int32, filter_order : Int32)
-    raise ArgumentError.new("input.size is less than four") if input.size < 4
-    raise ArgumentError.new("downsample_factor is < 2") if downsample_factor < 1
+  def self.downsample(input : Array(Float64), sample_rate : Float64, downsample_factor : Int32, filter_order : Int32, lowpass_cutoff : Float64)
+    raise ArgumentError.new("input size #{input.size} is less than four") if input.size < 4
+    verify_positive(downsample_factor)
     verify_positive(sample_rate)
 
-    cutoff = (sample_rate.to_f / downsample_factor) / 2.0
+    target_srate = (sample_rate.to_f / downsample_factor)
+    if lowpass_cutoff > (target_srate / 2.0)
+      raise ArgumentError.new("lowpass cutoff #{lowpass_cutoff} is > target sample rate / 2 #{target_srate / 2.0}")
+    end
+
     filter = SincFilter.new(sample_rate: sample_rate, order: filter_order,
-      cutoff: cutoff, window_class: Window::Nuttall)
+      cutoff: lowpass_cutoff, window_class: Window::Nuttall)
 
     input += downsample_input_padding(input.size, downsample_factor)
     filtered = filter.lowpass(input)
@@ -49,30 +53,23 @@ module DiscreteResampling
     return output
   end
 
+  def self.downsample(input : Array(Float64), sample_rate : Float64, downsample_factor : Int32, filter_order : Int32)
+    target_srate = sample_rate.to_f / downsample_factor
+    downsample(input: input, sample_rate: sample_rate, downsample_factor: downsample_factor,
+      filter_order: filter_order, lowpass_cutoff: target_srate / 2.0)
+  end
+
   def self.resample(input : Array(Float64), sample_rate : Float64, upsample_factor : Int32, downsample_factor : Int32, filter_order : Int32)
-    raise ArgumentError.new("input.size is less than four") if input.size < 4
-    raise ArgumentError.new("upsample_factor is < 2") if upsample_factor < 2
-    raise ArgumentError.new("downsample_factor is < 2") if downsample_factor < 2
-    verify_positive(sample_rate)
+    upsampled = upsample(input: input, sample_rate: sample_rate, upsample_factor: upsample_factor,
+      filter_order: filter_order)
 
-    upsampled = Array(Float64).new((upsample_factor * input.size).to_i, 0.0)
-    input.each_index do |i|
-      upsampled[i * upsample_factor] = input[i] * upsample_factor
-    end
+    upsampled_srate = sample_rate * upsample_factor
+    final_srate = upsampled_srate / downsample_factor
+    lowpass_cutoff = [final_srate / 2.0, sample_rate / 2.0].min
+    downsampled = downsample(input: upsampled, sample_rate: upsampled_srate, downsample_factor: downsample_factor,
+      filter_order: filter_order, lowpass_cutoff: lowpass_cutoff)
 
-    target_rate = sample_rate * upsample_factor / downsample_factor
-    cutoff = (target_rate < sample_rate) ? (target_rate / 2.0) : (sample_rate / 2.0)
-    filter = SincFilter.new(sample_rate: sample_rate * upsample_factor, order: filter_order,
-      cutoff: cutoff, window_class: Window::Nuttall)
-
-    upsampled += downsample_input_padding(upsampled.size, downsample_factor)
-    filtered = filter.lowpass(upsampled)
-
-    output = Array.new(filtered.size / downsample_factor) do |i|
-      filtered[i * downsample_factor]
-    end
-
-    return output
+    return downsampled
   end
 end
 

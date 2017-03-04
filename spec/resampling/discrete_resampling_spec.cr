@@ -8,7 +8,7 @@ describe DiscreteResampling do
   sample_rate = 400.0
   order = (sample_rate / test_freq).to_i
   signal1 = windowed_sine_signal(test_freq, sample_rate, size, Window::Blackman)
-  factors = [2,4,6,12]
+  factors = [1,2,4,6,12]
 
   describe ".upsample" do
     it "should produce output signal with the same max frequency (put through forward FFT)" do
