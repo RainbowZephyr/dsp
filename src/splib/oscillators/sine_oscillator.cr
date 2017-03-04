@@ -53,29 +53,10 @@ class SineOscillator
       @current_phase -= TWO_PI
     end
 
-    output = @ampl * sine(@current_phase) + @dc
+    output = @ampl * Math.sin(@current_phase) + @dc
     @current_phase += @phase_incr
 
     return output
-  end
-
-  # constant used to calculate sine wave
-  K_SINE_B = 4.0 / Math::PI
-  # constant used to calculate sine wave
-  K_SINE_C = -4.0 / (Math::PI * Math::PI)
-  # Q = 0.775
-  # constant used to calculate sine wave
-  K_SINE_P = 0.225
-
-  # generate a sine wave:
-  # input range: -PI to PI
-  # ouput range: -1 to 1
-  private def sine(x)
-    y = K_SINE_B * x + K_SINE_C * x * x.abs
-    # for extra precision
-    y = K_SINE_P * (y * y.abs - y) + y   # Q * y + P * y * y.abs
-
-    return y
   end
 end
 end
