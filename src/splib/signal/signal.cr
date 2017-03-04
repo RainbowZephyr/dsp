@@ -56,11 +56,15 @@ class Sig
     end
   end
 
-  private def check_other_signal_compatibility(other : Sig)
+  private def check_size_compatibility(other : Array(Float64))
     if other.size != size
       msg = "Other signal size #{other.size} does not equal current signal size #{size}"
       raise ArgumentError.new(msg)
     end
+  end
+
+  private def check_other_signal_compatibility(other : Sig)
+    check_size_compatibility(other.data)
 
     if other.sample_rate != sample_rate
       msg = "Other signal sample rate #{other.sample_rate} does not equal current signal sample rate #{@sample_rate}"
@@ -77,6 +81,11 @@ class Sig
     Sig.new(Array.new(size){|i| @data[i] + other.data[i]}, @sample_rate)
   end
 
+  def +(other : Array(Float64))
+    check_size_compatibility(other)
+    Sig.new(Array.new(size){|i| @data[i] + other[i]}, @sample_rate)
+  end
+
   def -(other : Float64)
     Sig.new(@data.map {|x| x - other}, @sample_rate)
   end
@@ -84,6 +93,11 @@ class Sig
   def -(other : Sig)
     check_other_signal_compatibility(other)
     Sig.new(Array.new(size){|i| @data[i] - other.data[i]}, @sample_rate)
+  end
+
+  def -(other : Array(Float64))
+    check_size_compatibility(other)
+    Sig.new(Array.new(size){|i| @data[i] - other[i]}, @sample_rate)
   end
 
   def *(other : Float64)
@@ -95,6 +109,11 @@ class Sig
     Sig.new(Array.new(size){|i| @data[i] * other.data[i]}, @sample_rate)
   end
 
+  def *(other : Array(Float64))
+    check_size_compatibility(other)
+    Sig.new(Array.new(size){|i| @data[i] * other[i]}, @sample_rate)
+  end
+
   def /(other : Float64)
     Sig.new(@data.map {|x| x / other}, @sample_rate)
   end
@@ -104,11 +123,17 @@ class Sig
     Sig.new(Array.new(size){|i| @data[i] / other.data[i]}, @sample_rate)
   end
 
+  def /(other : Array(Float64))
+    check_size_compatibility(other)
+    Sig.new(Array.new(size){|i| @data[i] / other[i]}, @sample_rate)
+  end
+
   def extrema
-    if @extrema.nil?
-      @extrema = Extrema(Float64).new @data
-    end
-    return @extrema
+    @extrema ||= Extrema(Float64).new @data
+  end
+
+  def frequency_domain
+    @frequency_domain ||= FrequencyDomain.new(@data, @sample_rate)
   end
 end
 
