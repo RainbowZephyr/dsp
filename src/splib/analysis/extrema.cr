@@ -1,56 +1,99 @@
 module Splib
 
 # Features analysis methods.
-class Extrema(T)
-  getter :minima, :maxima, :extrema
+class Extrema
+  getter :local_minima, :local_maxima
 
-  def initialize(samples : Array(T))
-    @minima = {} of Int32 => T
-    @maxima = {} of Int32 => T
-    @extrema = {} of Int32 => T
-    compute_extrema(samples)
+  @local_minima = {} of Int32 => Float64
+  @local_maxima = {} of Int32 => Float64
+  @local_extrema = {} of Int32 => Float64
+
+  @global_min_val = Float64::MAX
+  @global_min_idx = 0
+  @global_max_val = Float64::MIN
+  @global_max_idx = 0
+
+  @idx = 0
+  @last_sample = 0.0
+  @local_extrema_search_state_machine = LocalExtremaSearchStateMachine.new(0.0)
+
+  def none_processed?
+    @idx <= 0
   end
 
-  def ==(other : Extrema(T))
-    (@minima == other.minima) && (@maxima == other.maxima)
+  def any_processed?
+    @idx > 0
   end
 
-  private def compute_extrema(samples : Array(T))
-    global_min_idx = 0
-    global_min_val = samples[0]
-    global_max_idx = 0
-    global_max_val = samples[0]
+  def ==(other : Extrema)
+    (self.minima == other.minima) && (self.maxima == other.maxima)
+  end
 
-    diffs = [] of T
-    (1...samples.size).each do |i|
-      diffs.push(samples[i] - samples[i-1])
+  def initialize
+  end
 
-      if samples[i] < global_min_val
-        global_min_idx = i
-        global_min_val = samples[i]
-      end
+  def initialize(samples : Array(Float64))
+    process_samples(samples)
+  end
 
-      if samples[i] > global_max_val
-        global_max_idx = i
-        global_max_val = samples[i]
+  def process_sample(sample : Float64)
+    update_global_min(sample)
+    update_global_max(sample)
+    update_local_extrema(sample)
+    @idx += 1
+  end
+
+  def process_samples(samples : Array(Float64))
+    samples.each {|x| process_sample(x)}
+  end
+
+  def update_global_min(sample)
+    if none_processed? || sample < @global_min_val
+      @global_min_idx = @idx
+      @global_min_val = sample
+    end
+  end
+
+  def update_global_max(sample)
+    if none_processed? || sample > @global_max_val
+      @global_max_idx = @idx
+      @global_max_val = sample
+    end
+  end
+
+  def update_local_extrema(sample)
+    if any_processed?
+      diff = sample - @last_sample
+      @local_extrema_search_state_machine.process(diff)
+
+      if @local_extrema_search_state_machine.found_minima
+        @local_minima[@idx-1] = @last_sample
+      elsif @local_extrema_search_state_machine.found_maxima
+        @local_maxima[@idx-1] = @last_sample
       end
     end
-    @minima[global_min_idx] = global_min_val
-    @maxima[global_max_idx] = global_max_val
 
-    lessm = LocalExtremaSearchStateMachine(T).new(diffs.first)
+    @last_sample = sample
+  end
 
-    # at diff zero crossings there is a local maxima/minima
-    (1...diffs.size).each do |i|
-      lessm.process(diffs[i])
-      if lessm.found_minima
-        @minima[i] = samples[i]
-      elsif lessm.found_maxima
-        @maxima[i] = samples[i]
-      end
+  def minima
+    if any_processed?
+      @local_minima.merge({@global_min_idx => @global_min_val})
+    else
+      @local_minima
     end
+  end
 
-    @extrema = @minima.merge(@maxima)
+  def maxima
+    if any_processed?
+      @local_maxima.merge({@global_max_idx => @global_max_val})
+    else
+      @local_maxima
+    end
+  end
+
+  def extrema
+    self.minima.merge(self.maxima)
   end
 
   # Returns only negative minima and positive maxima
@@ -60,29 +103,29 @@ class Extrema(T)
 
   # Returns only negative minima
   def negative_minima
-    @minima.select {|idx,val| val <= 0 }
+    minima.select {|idx,val| val <= 0 }
   end
 
   # Returns only positive maxima
   def positive_maxima
-    @maxima.select {|idx,val| val >= 0 }
+    maxima.select {|idx,val| val >= 0 }
   end
 
-  class LocalExtremaSearchStateMachine(T)
+  class LocalExtremaSearchStateMachine
     POSITIVE_DIFF = :positive_diff
     NEGATIVE_DIFF = :negative_diff
     ZERO_DIFF = :zero_diff
 
     getter :found_minima, :found_maxima
 
-    def initialize(first_diff : T)
+    def initialize(first_diff : Float64)
       @found_minima = @found_maxima = false
       @prev_diff_type = uninitialized Symbol
       @prev_diff_type = diff_type(first_diff)
       @prev_prev_diff_type = @prev_diff_type
     end
 
-    def diff_type(diff : T) : Symbol
+    def diff_type(diff : Float64) : Symbol
       if diff == 0.0
         ZERO_DIFF
       elsif diff < 0.0
@@ -97,26 +140,13 @@ class Extrema(T)
       @found_maxima = false
       current_diff_type = diff_type(diff)
 
-      case @prev_diff_type
-      when ZERO_DIFF
-        case current_diff_type
-        when POSITIVE_DIFF
-          if @prev_prev_diff_type == NEGATIVE_DIFF
-            @found_maxima = true
-          end
-        when NEGATIVE_DIFF
-          if @prev_prev_diff_type == POSITIVE_DIFF
-            @found_maxima = true
-          end
-        end
-      when NEGATIVE_DIFF
-        if current_diff_type == POSITIVE_DIFF
-          @found_minima = true
-        end
+      case current_diff_type
       when POSITIVE_DIFF
-        if current_diff_type == NEGATIVE_DIFF
-          @found_maxima = true
-        end
+        @found_minima = (@prev_diff_type == NEGATIVE_DIFF) ||
+          (@prev_diff_type == ZERO_DIFF && @prev_prev_diff_type == NEGATIVE_DIFF)
+      when NEGATIVE_DIFF
+        @found_maxima = (@prev_diff_type == POSITIVE_DIFF) ||
+          (@prev_diff_type == ZERO_DIFF && @prev_prev_diff_type == POSITIVE_DIFF)
       end
 
       if current_diff_type != @prev_diff_type

@@ -9,6 +9,9 @@ class Sig
 
   def initialize(@data : Array(Float64), @sample_rate : Float64)
     verify_positive(@sample_rate)
+
+    @extrema = Extrema.new
+    @extrema_has_processed_samples = false
   end
 
   delegate size, each, to: @data
@@ -129,7 +132,11 @@ class Sig
   end
 
   def extrema
-    @extrema ||= Extrema(Float64).new @data
+    unless @extrema_has_processed_samples
+      @extrema.process_samples(@data)
+      @extrema_has_processed_samples = true
+    end
+    return @extrema
   end
 
   def frequency_domain

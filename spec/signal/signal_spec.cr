@@ -191,7 +191,7 @@ describe Signal do
     it "should return Extrema object made from signal data" do
       data = [-1.4, -3.57, 1.61, -3.81, 3.66, 4.68, 3.48, -3.5, 4.18, -2.12]
       s = Sig.new(data, sample_rate)
-      s.extrema.should eq(Extrema(Float64).new(data))
+      s.extrema.should eq(Extrema.new(data))
     end
   end
 end
