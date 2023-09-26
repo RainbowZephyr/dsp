@@ -8,7 +8,7 @@ describe SincFilter do
   context "odd order" do
     it "should raise ArgumentError" do
       [1,3,5,7].each do |order|
-        expect_raises {
+        expect_raises(ArgumentError) {
           SincFilter.new(order: order, sample_rate: SAMPLE_RATE, cutoff: 100.0,
             window_class: WINDOW_CLASS)
         }
@@ -19,7 +19,7 @@ describe SincFilter do
   context "non-positive sample rate" do
     it "should raise ArgumentError" do
       [-1.0, 0.0].each do |sample_rate|
-        expect_raises {
+        expect_raises(ArgumentError) {
           SincFilter.new(order: 16, sample_rate: sample_rate, cutoff: 100.0,
             window_class: WINDOW_CLASS)
         }
@@ -30,7 +30,7 @@ describe SincFilter do
   context "cutoff freq greater than half sample rate" do
     it "should raise ArgumentError" do
       [(SAMPLE_RATE / 2.0) + 1.0, SAMPLE_RATE * 0.6].each do |cutoff|
-        expect_raises {
+        expect_raises(ArgumentError) {
           SincFilter.new(order: 16, sample_rate: SAMPLE_RATE, cutoff: cutoff,
             window_class: WINDOW_CLASS)
         }
