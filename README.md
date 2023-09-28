@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/jamestunnell/splib.svg?branch=master)](https://travis-ci.org/jamestunnell/splib)
-
-# splib
+# DSP
 
 Signal processing library written in Crystal (high-level and fast).
 
@@ -10,31 +8,34 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  splib:
-    github: https://github.com/jamestunnell/splib
+  dsp:
+    github: https://github.com/RainbowZephyr/dsp
 ```
 
 ## Features
 
-* DFT and FFT transforms (forward and inverse)
+* FFT Planner, multiple optimized FFT implementations (forward and inverse)
 * Windows (Blackman, Hamming, etc.)
 * Windowed sinc filtering (lowpass, highpass, bandpass, bandstop)
 
 ## Usage
 
 ```crystal
-require "splib"
+require "dsp"
 ```
 
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
+### FFT
+```crystal
+require "dsp"
+waveform  = Array(Float64).new(16384) { |e| Random.rand }
+transformed : Array(Complex) = DSP::Transforms::FFTPlanner.fft(waveform)
+inverse : Array(Complex) = DSP::Transforms::FFTPlanner.ifft(transformed)
+```
+TODO: Write more usage instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/[your-github-name]/splib/fork )
+1. Fork it ( https://github.com/[your-github-name]/dsp/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -43,3 +44,4 @@ TODO: Write development instructions here
 ## Contributors
 
 - [jamestunnell](https://github.com/jamestunnell) James Tunnell - creator, maintainer
+- [RainbowZephyr](https://github.com/RainbowZephyr)
