@@ -1,14 +1,13 @@
 module DSP::Permute
-
   # Permutes array where size = base ^ x, x is a whole number
-  def self.radix_in_place(arr : Array, base : Int32) 
+  def self.radix_in_place(arr : Array, base : Int32)
     # permuted = arr.map { |e| e }
     size = arr.size
 
-      exponent = Math.log(size, base)
-      if exponent.floor != exponent.round(12)
-        raise ArgumentError.new("Input size #{size} is not power of #{base}")
-      end
+    exponent = Math.log(size, base)
+    if exponent.floor != exponent.round(12)
+      raise ArgumentError.new("Input size #{size} is not power of #{base}")
+    end
 
     # Defined to be arrays of long in C which is 32bit
     nt = Array(Int32).new(32, 0)
@@ -52,10 +51,8 @@ module DSP::Permute
   end
 
   def self.radix(arr : Array, base : Int32) : Array
-    permuted = arr.map {|e| e}
+    permuted = arr.map { |e| e }
     radix_in_place(permuted, base)
     return permuted
   end
-
-
 end

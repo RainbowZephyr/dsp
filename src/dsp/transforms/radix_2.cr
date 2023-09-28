@@ -4,13 +4,13 @@ require "../permute/radix"
 module DSP::Transforms
   class Radix2
     TWO_PI = Math::PI * 2
-    
+
     def self.fft(input : Array) : Array(Complex)
       return fft_helper(input, true)
     end
 
     def self.ifft(input : Array) : Array(Complex)
-      return fft_helper(input, false).map{|e| e/input.size}
+      return fft_helper(input, false).map { |e| e/input.size }
     end
 
     # @author James Tunnell
@@ -24,7 +24,6 @@ module DSP::Transforms
       end
       base = base.to_i
       reversed_array = DSP::Permute.radix(complex_input, 2)
-      # reversed_array = bit_reversed_order(complex_input, base)
 
       sin_mul = forward ? -1.0 : 1.0
       (1..base).each do |stride|
@@ -36,10 +35,10 @@ module DSP::Transforms
         0.step(to: size - 1, by: m) do |k|
           omega = 1
           (0...(m//2)).each do |j|
-            odd = omega * reversed_array[k + j + m//2]
-            even = reversed_array[k + j]
-            reversed_array[k + j] = even + odd
-            reversed_array[k + j + m//2] = even - odd
+            s0 = reversed_array[k + j]
+            s1 = omega * reversed_array[k + j + m//2]
+            reversed_array[k + j] = s0 + s1
+            reversed_array[k + j + m//2] = s0 - s1
             omega *= factor
           end
         end

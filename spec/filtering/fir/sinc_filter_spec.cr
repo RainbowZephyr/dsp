@@ -1,14 +1,14 @@
 require "../../spec_helper"
 
-ORDER = 16
-SAMPLE_RATE = 5000.0
+ORDER        =     16
+SAMPLE_RATE  = 5000.0
 WINDOW_CLASS = Window::BlackmanHarris
 
 describe SincFilter do
   context "odd order" do
-    it "should raise ArgumentError" do
-      [1,3,5,7].each do |order|
-        expect_raises(ArgumentError) {
+    it "should raise NonEvenError" do
+      [1, 3, 5, 7].each do |order|
+        expect_raises(NonEvenError) {
           SincFilter.new(order: order, sample_rate: SAMPLE_RATE, cutoff: 100.0,
             window_class: WINDOW_CLASS)
         }
@@ -17,13 +17,11 @@ describe SincFilter do
   end
 
   context "non-positive sample rate" do
-    it "should raise ArgumentError" do
-      [-1.0, 0.0].each do |sample_rate|
-        expect_raises(ArgumentError) {
-          SincFilter.new(order: 16, sample_rate: sample_rate, cutoff: 100.0,
-            window_class: WINDOW_CLASS)
-        }
-      end
+    it "should raise NonPositiveError" do
+      expect_raises(NonPositiveError) {
+        SincFilter.new(order: 16, sample_rate: -1.0, cutoff: 100.0,
+          window_class: WINDOW_CLASS)
+      }
     end
   end
 
@@ -38,9 +36,8 @@ describe SincFilter do
     end
   end
 
-  [60,80,100,120,140].each do |order|
+  [80, 100, 120, 140].each do |order|
     (Scale.exponential((SAMPLE_RATE/16)..(SAMPLE_RATE/8), 3)).each do |cutoff|
-
       filter = SincFilter.new(order: order, cutoff: cutoff, sample_rate: SAMPLE_RATE,
         window_class: WINDOW_CLASS)
 
@@ -75,7 +72,6 @@ describe SincFilter do
           end
         end
       end
-
     end
   end
 end

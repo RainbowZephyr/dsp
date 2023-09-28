@@ -10,12 +10,18 @@ module DSP::Transforms
     end
 
     def self.ifft(input : Array) : Array(Complex)
-      return fft_helper(input, false).map{|e| e/input.size}
+      return fft_helper(input, false).map { |e| e/input.size }
     end
 
-    def self.fft_helper(input : Array, forward : Bool = true) : Array(Complex)
-      complex_input = input.map { |e| e.to_c }
+    def self.fft_helper(input : Array, forward? : Bool = true) : Array(Complex)
+      if forward?
+        complex_input = input.map { |e| e.to_c }
+      else
+        complex_input = input.map { |e| e.to_c.conj }
+      end
+
       size = input.size
+
       exponent = Math.log(size, 8)
       if exponent.floor != exponent
         raise ArgumentError.new("Input size #{size} is not power of 8")
@@ -23,18 +29,18 @@ module DSP::Transforms
 
       reversed_array = DSP::Permute.radix(complex_input, 8)
 
-      sin_mul = forward ? -1.0 : 1.0
       (1..exponent).each do |stride|
         m = 8**stride
 
         y = Math::PI * 2 / m
-        factor1 = Complex.new(Math.cos(y), sin_mul * Math.sin(y))
-        factor2 = Complex.new(Math.cos(y*2), sin_mul * Math.sin(y*2))
-        factor3 = Complex.new(Math.cos(y*3), sin_mul * Math.sin(y*3))
-        factor4 = Complex.new(Math.cos(y*4), sin_mul * Math.sin(y*4))
-        factor5 = Complex.new(Math.cos(y*5), sin_mul * Math.sin(y*5))
-        factor6 = Complex.new(Math.cos(y*6), sin_mul * Math.sin(y*6))
-        factor7 = Complex.new(Math.cos(y*7), sin_mul * Math.sin(y*7))
+        # sin_mul = forward ? -1.0 : 1.0
+        factor1 = Complex.new(Math.cos(y), -Math.sin(y))
+        factor2 = Complex.new(Math.cos(y*2), -Math.sin(y*2))
+        factor3 = Complex.new(Math.cos(y*3), -Math.sin(y*3))
+        factor4 = Complex.new(Math.cos(y*4), -Math.sin(y*4))
+        factor5 = Complex.new(Math.cos(y*5), -Math.sin(y*5))
+        factor6 = Complex.new(Math.cos(y*6), -Math.sin(y*6))
+        factor7 = Complex.new(Math.cos(y*7), -Math.sin(y*7))
 
         0.step(to: size - 1, by: m) do |k|
           omega1 = 1
@@ -76,13 +82,13 @@ module DSP::Transforms
             e9 = d3 - e5
 
             reversed_array[k + j] = e0 + e2
-            reversed_array[k + j + 1 * m // 8] = (e6 + e8) 
-            reversed_array[k + j + 2 * m // 8] = (e1 + e3) 
-            reversed_array[k + j + 3 * m // 8] = (e7 - e9) 
-            reversed_array[k + j + 4 * m // 8] = (e0 - e2) 
-            reversed_array[k + j + 5 * m // 8] = (e7 + e9) 
-            reversed_array[k + j + 6 * m // 8] = (e1 - e3) 
-            reversed_array[k + j + 7 * m // 8] = (e6 - e8) 
+            reversed_array[k + j + 1 * m // 8] = (e6 + e8)
+            reversed_array[k + j + 2 * m // 8] = (e1 + e3)
+            reversed_array[k + j + 3 * m // 8] = (e7 - e9)
+            reversed_array[k + j + 4 * m // 8] = (e0 - e2)
+            reversed_array[k + j + 5 * m // 8] = (e7 + e9)
+            reversed_array[k + j + 6 * m // 8] = (e1 - e3)
+            reversed_array[k + j + 7 * m // 8] = (e6 - e8)
 
             omega1 *= factor1
             omega2 *= factor2

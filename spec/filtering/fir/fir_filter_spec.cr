@@ -13,8 +13,8 @@ describe FirFilter do
 
     context "non-positive sample rate" do
       it "should raise ArgumentError" do
-        expect_raises(ArgumentError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: 0.0) }
-        expect_raises(ArgumentError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: -20.0) }
+        expect_raises(NonPositiveError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: 0.0) }
+        expect_raises(NonPositiveError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: -20.0) }
       end
     end
   end

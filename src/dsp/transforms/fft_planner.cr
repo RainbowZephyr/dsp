@@ -18,9 +18,9 @@ module DSP::Transforms
       
       classes = {
       8 => -> {DSP::Transforms::Radix8.fft_helper(input, forward?)},
-      # 5 => -> {DSP::Transforms::Radix5.fft_helper(input, forward?)},
+      5 => -> {DSP::Transforms::Radix5.fft_helper(input, forward?)},
       4 => -> {DSP::Transforms::Radix4.fft_helper(input, forward?)},
-      # 3 => -> {DSP::Transforms::Radix3.fft_helper(input, forward?)},
+      3 => -> {DSP::Transforms::Radix3.fft_helper(input, forward?)},
       2 => -> {DSP::Transforms::Radix2.fft_helper(input, forward?)},
       0 => -> {DSP::Transforms::DFT.fft_helper(input, forward?)}
     }
