@@ -6,15 +6,15 @@ describe FirFilter do
   describe "#initialize" do
     context "kernel size < 2" do
       it "should raise ArgumentError" do
-        expect_raises { FirFilter.new(kernel: [] of Float64, sample_rate: sample_rate) }
-        expect_raises { FirFilter.new(kernel: [0.2], sample_rate: sample_rate) }
+        expect_raises(ArgumentError) { FirFilter.new(kernel: [] of Float64, sample_rate: sample_rate) }
+        expect_raises(ArgumentError) { FirFilter.new(kernel: [0.2], sample_rate: sample_rate) }
       end
     end
 
     context "non-positive sample rate" do
       it "should raise ArgumentError" do
-        expect_raises { FirFilter.new(kernel: [0.0, 0.0], sample_rate: 0.0) }
-        expect_raises { FirFilter.new(kernel: [0.0, 0.0], sample_rate: -20.0) }
+        expect_raises(NonPositiveError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: 0.0) }
+        expect_raises(NonPositiveError) { FirFilter.new(kernel: [0.0, 0.0], sample_rate: -20.0) }
       end
     end
   end

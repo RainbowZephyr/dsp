@@ -1,7 +1,7 @@
 require "spec"
-require "../src/splib"
+require "../src/dsp"
 
-include Splib
+include DSP
 
 def windowed_sine_signal(freq, sample_rate, size, window_class)
   signal_data = SineOscillator.new(freq: freq, sample_rate: sample_rate).samples(size)
