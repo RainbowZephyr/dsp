@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 ORDER        =     16
 SAMPLE_RATE  = 5000.0
-WINDOW_CLASS = Window::BlackmanHarris
+WINDOW_CLASS = DSP::Windows::BlackmanHarris
 
 describe SincFilter do
   context "odd order" do

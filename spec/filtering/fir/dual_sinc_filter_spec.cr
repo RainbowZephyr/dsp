@@ -8,7 +8,7 @@ describe DualSincFilter do
       center = (left_cutoff + right_cutoff) / 2.0
       bandwidth = right_cutoff - left_cutoff
 
-      filter = DualSincFilter.new(order: order, left_cutoff: left_cutoff, right_cutoff: right_cutoff, sample_rate: sample_rate, window_class: Window::Blackman)
+      filter = DualSincFilter.new(order: order, left_cutoff: left_cutoff, right_cutoff: right_cutoff, sample_rate: sample_rate, window_class: DSP::Windows::Blackman)
 
       describe "#bandpass" do
         it "should restrict magnitude below left cutoff and above right cutoff, and preseve it in between" do

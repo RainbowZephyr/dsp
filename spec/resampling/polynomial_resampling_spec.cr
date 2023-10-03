@@ -6,7 +6,7 @@ describe PolynomialResampling do
   test_freq = 10.0
   sample_rate = 400.0
   size = (sample_rate * 5.0 / test_freq).to_i
-  signal1 = windowed_sine_signal(test_freq, sample_rate, size, Window::Blackman)
+  signal1 = windowed_sine_signal(test_freq, sample_rate, size, DSP::Windows::Blackman)
 
   context ".upsample" do
     it "should produce output signal with the same max frequency (put through forward FFT)" do

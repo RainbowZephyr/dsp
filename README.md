@@ -9,7 +9,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   dsp:
-    github: https://github.com/RainbowZephyr/dsp
+    github: RainbowZephyr/dsp
 ```
 
 ## Features
