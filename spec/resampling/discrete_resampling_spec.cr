@@ -7,7 +7,7 @@ describe DiscreteResampling do
   size = 128
   sample_rate = 400.0
   order = (sample_rate / test_freq).to_i
-  signal1 = windowed_sine_signal(test_freq, sample_rate, size, Window::Blackman)
+  signal1 = windowed_sine_signal(test_freq, sample_rate, size, DSP::Windows::Blackman)
   factors = [1,2,4,6,12]
 
   describe ".upsample" do

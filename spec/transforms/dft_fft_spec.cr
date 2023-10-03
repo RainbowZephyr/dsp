@@ -18,7 +18,7 @@
 # describe "DFT,FFT" do
 #   fft_size = 128
 #   sample_rate = 400.0
-#   window = Window::BlackmanHarris.new(fft_size)
+#   window = DSP::Windows::BlackmanHarris.new(fft_size)
 
 #   test_freqs = [
 #     20.0,

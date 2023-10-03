@@ -15,7 +15,7 @@ module DiscreteResampling
     end
 
     filter = SincFilter.new(order: filter_order,  sample_rate: sample_rate * upsample_factor,
-      cutoff: sample_rate / 2.0, window_class: Window::Nuttall)
+      cutoff: sample_rate / 2.0, window_class: DSP::Windows::Nuttall)
 
     return filter.lowpass(output)
   end
@@ -41,7 +41,7 @@ module DiscreteResampling
     end
 
     filter = SincFilter.new(sample_rate: sample_rate, order: filter_order,
-      cutoff: lowpass_cutoff, window_class: Window::Nuttall)
+      cutoff: lowpass_cutoff, window_class: DSP::Windows::Nuttall)
 
     input += downsample_input_padding(input.size, downsample_factor)
     filtered = filter.lowpass(input)

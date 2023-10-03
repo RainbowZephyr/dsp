@@ -11,7 +11,7 @@ module DSP
 
     # Given a filter order, 2 cutoff frequencies, sample rate, and window class,
     # develop a FIR filter kernel that can be used for lowpass filtering.
-    def initialize(order : Int32, sample_rate : Float64, left_cutoff : Float64, right_cutoff : Float64, @window_class : Window.class)
+    def initialize(order : Int32, sample_rate : Float64, left_cutoff : Float64, right_cutoff : Float64, @window_class : DSP::Windows::Window.class)
       if left_cutoff >= right_cutoff
         msg = "Left cutoff freq #{left_cutoff} is not less than right cutoff freq #{right_cutoff}"
         raise ArgumentError.new(msg)
@@ -30,7 +30,7 @@ module DSP
       # make FIR filter kernels for bandpass and bandstop
       bandpass_kernel = Array.new(size, 0.0)
       bandstop_kernel = Array.new(size, 0.0)
-      window = @window_class.new(size)
+      window = @window_class.get(size)
 
       (0...(@order / 2)).each do |n|
         bandpass_kernel[size - 1 - n] = bandpass_kernel[n] = @right_filter.lowpass_fir.kernel[n] + @left_filter.highpass_fir.kernel[n]

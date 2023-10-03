@@ -12,7 +12,7 @@ class SincFilter
 
   # Given a filter order, cutoff frequency, sample rate, and window class,
   # develop a FIR filter kernel that can be used for lowpass filtering.
-  def initialize(order : Int32, sample_rate : Float64, cutoff : Float64, @window_class : Window.class)
+  def initialize(order : Int32, sample_rate : Float64, cutoff : Float64, @window_class : DSP::Windows::Window.class)
     verify_even(order)
     @order = order
     size = @order + 1
@@ -36,7 +36,7 @@ class SincFilter
 
     lowpass_kernel = Array.new(size, 0.0)
     highpass_kernel = Array.new(size, 0.0)
-    window = @window_class.new(size)
+    window = @window_class.get(size)
 
     (0...(@order // 2)).each do |n|
       c = n - (@order // 2)

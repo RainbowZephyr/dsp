@@ -1,19 +1,19 @@
 require "../spec_helper"
 
 window_classes = [
-  Window::Rectangular,
-  Window::Hann,
-  Window::Hamming,
-  Window::Cosine,
-  Window::Lanczos,
-  Window::Triangular,
-  Window::Gaussian,
-  Window::BartlettHann,
-  Window::Blackman,
-  Window::Nuttall,
-  Window::BlackmanHarris,
-  Window::BlackmanNuttall,
-  Window::Tukey
+  DSP::Windows::Rectangular,
+  DSP::Windows::Hann,
+  DSP::Windows::Hamming,
+  DSP::Windows::Cosine,
+  DSP::Windows::Lanczos,
+  DSP::Windows::Triangular,
+  DSP::Windows::Gaussian,
+  DSP::Windows::BartlettHann,
+  DSP::Windows::Blackman,
+  DSP::Windows::Nuttall,
+  DSP::Windows::BlackmanHarris,
+  DSP::Windows::BlackmanNuttall,
+  DSP::Windows::Tukey
 ]
 
 TOLERANCE = 1e-6
@@ -22,7 +22,7 @@ window_classes.each do |window_class|
   describe window_class do
     [2,3,4,5,8,11,16,35,40,100,117].each do |size|
       describe "for size #{size}" do
-        window = window_class.new(size)
+        window = window_class.get(size)
 
         it "should be symmetric" do
           (size // 2).times do |i|
