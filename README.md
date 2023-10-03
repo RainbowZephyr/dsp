@@ -43,5 +43,5 @@ TODO: Write more usage instructions here
 
 ## Contributors
 
-- [jamestunnell](https://github.com/jamestunnell) James Tunnell - creator, maintainer
-- [RainbowZephyr](https://github.com/RainbowZephyr)
+- [jamestunnell](https://github.com/jamestunnell) James Tunnell - creator
+- [RainbowZephyr](https://github.com/RainbowZephyr) Maintainer

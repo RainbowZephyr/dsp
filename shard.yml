@@ -1,11 +1,12 @@
-name: splib
-version: 0.1.0
+name: dsp
+version: 0.2.0
 
 authors:
   - James Tunnell <jamestunnell@gmail.com>
+  - RainbowZephyr
 
 description: Signal processing library
 
-crystal: 0.20.5
+crystal: 1.9.2
 
 license: MIT
