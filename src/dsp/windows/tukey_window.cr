@@ -6,7 +6,7 @@ module DSP::Windows
   # lobe of width alpha * N / 2 that is convolved with a rectangular window. At
   # alpha = 0 it becomes rectangular, and at alpha = 1 it becomes a Hann window.
   # For more info, see https://en.wikipedia.org/wiki/Window_function#Tukey_window.
-  class Tukey
+  class Tukey < Window
     ALPHA_RANGE = (0.0..1.0)
 
     def self.get(size, alpha = 0.5)
