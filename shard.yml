@@ -10,3 +10,7 @@ description: Signal processing library
 crystal: 1.9.2
 
 license: MIT
+
+dependencies:
+  linalg:
+    github: konovod/linalg

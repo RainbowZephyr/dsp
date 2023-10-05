@@ -1,4 +1,6 @@
-module DSP
+module DSP::Analysis
+    # Implemented from commons.math3 in Java
+
     # Estimates an ordinary least squares regression model with one independent variable.
     # y = intercept + slope * x
     # Standard errors for intercept and slope are available as well as ANOVA, r-square and Pearson's r statistics.
@@ -13,19 +15,19 @@ module DSP
         SERIALVERSIONUID = -3004689053607543335
         
         # sum of x values
-        @sumX : Float64 = 0.0
+        @sum_x : Float64 = 0.0
         
         # total variation in x (sum of squared deviations from xbar)
-        @sumXX : Float64 = 0.0
+        @sum_xx : Float64 = 0.0
         
         # sum of y values
-        @sumY : Float64 = 0.0
+        @sum_y : Float64 = 0.0
         
         # total variation in y (sum of squared deviations from ybar)
-        @sumYY : Float64 = 0.0
+        @sum_yy : Float64 = 0.0
         
         # sum of products
-        @sumXY : Float64 = 0.0
+        @sum_xy : Float64 = 0.0
         
         # number of observations
         @n : Int32 = 0
@@ -37,7 +39,7 @@ module DSP
         @ybar : Float64 = 0.0
         
         # include an intercept or not
-        @hasIntercept : Bool = true
+        @has_intercept : Bool = true
         
         # Create an empty SimpleRegression instance
         def initialize
@@ -48,8 +50,7 @@ module DSP
         # Use false to estimate a model with no intercept. When the hasIntercept property is false, the model is estimated without a constant term and getIntercept() returns 0.
         # Params:
         # includeIntercept – whether or not to include an intercept term in the regression model
-        def initialize(includeIntercept : Bool)
-            @hasIntercept = includeIntercept
+        def initialize(@has_intercept)
         end
         
         # Returns the slope of the estimated regression line.
@@ -59,13 +60,13 @@ module DSP
         # Returns:
         # the slope of the regression line
         def get_slope() : Float64
-            if n < 2
+            if @n < 2
                 return Float64::NAN
             end
-            if @sumXX.abs < 10 * Float64::MIN
+            if @sum_xx.abs < 10 * Float64::MIN
                 return Float64::NAN
             end
-            return @sumXY / @sumXX
+            return @sum_xy / @sum_xx
         end
         
         # Returns the intercept of the estimated regression line, given the slope.
@@ -76,10 +77,37 @@ module DSP
         # the intercept of the regression line
         def get_intercept(slope : Float64) : Float64
             if @has_intercept
-                return (@sumY - slope * @sumX) / n
+                return (@sum_y - slope * @sum_x) / @n
             end
             return 0.0
         end
+        
+        def add_data(x : Float64,  y : Float64) 
+            if @n == 0
+                @xbar = x
+                @ybar = y
+            elsif @has_intercept 
+                fact1 = 1.0 + @n
+                fact2 = @n / (1.0 + @n)
+                dx = x - @xbar
+                dy = y - @ybar
+                @sum_xx += dx * dx * fact2
+                @sum_yy += dy * dy * fact2
+                @sum_xy += dx * dy * fact2
+                @xbar += dx / fact1
+                @ybar += dy / fact1
+            end
+            
+            if !@has_intercept
+                @sum_xx += x * x 
+                @sum_yy += y * y 
+                @sum_xy += x * y 
+            end
+            @sum_x += x
+            @sum_y += y
+            @n += 1
+        end
+    
         
         # Returns the intercept of the estimated regression line, if hasIntercept() is true; otherwise 0.
         # The least squares estimate of the intercept is computed using the normal equations . The intercept is sometimes denoted b0.
@@ -90,7 +118,7 @@ module DSP
         # See Also:
         # SimpleRegression(boolean)
         def get_intercept() : Float64
-            return @has_intercept ? DSP::SimpleRegression.get_intercept(DSP::SimpleRegression.get_slope()) : 0.0
+            return @has_intercept ? get_intercept(get_slope()) : 0.0
         end
     end
 end
