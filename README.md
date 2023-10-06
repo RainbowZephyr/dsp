@@ -17,6 +17,7 @@ dependencies:
 * FFT Planner, multiple optimized FFT implementations (forward and inverse)
 * Windows (Blackman, Hamming, etc.)
 * Windowed sinc filtering (lowpass, highpass, bandpass, bandstop)
+* Signal Detrending
 
 ## Usage
 
@@ -31,6 +32,16 @@ waveform  = Array(Float64).new(16384) { |e| Random.rand }
 transformed : Array(Complex) = DSP::Transforms::FFTPlanner.fft(waveform)
 inverse : Array(Complex) = DSP::Transforms::FFTPlanner.ifft(transformed)
 ```
+### Detrend
+```crystal
+# Linear
+waveform = [1,2,3,4]
+hash = Analysis::Detrend.apply(waveform) # {:detrended => ...., :trend_line => ...}
+
+waveform = [1,2,3,4]
+hash = Analysis::Detrend.apply(waveform, DSP::Analysis::Mode::POLYNOMIAL, 15) # {:detrended => ...., :trend_line => ...}
+```
+
 TODO: Write more usage instructions here
 
 ## Contributing
