@@ -34,6 +34,8 @@ inverse : Array(Complex) = DSP::Transforms::FFTPlanner.ifft(transformed)
 ```
 ### Detrend
 ```crystal
+include DSP
+
 # Linear
 waveform = [1,2,3,4]
 hash = Analysis::Detrend.apply(waveform) # {:detrended => ...., :trend_line => ...}
