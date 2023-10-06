@@ -115,10 +115,8 @@ module DSP::Analysis
     end
 
     def estimate_regression_params : Array(Float64)
-        # puts "X #{@x_matrix}, y #{@y_vector}"
-        a, r, pvt = @x_matrix.qr
-        puts "a #{a}, r #{r}, pvt #{pvt}"
-      return r.solvels(@y_vector).to_a
+      a, r, pvt = @x_matrix.qr
+      return a.solvels(@y_vector).to_a
     end
   end
 end

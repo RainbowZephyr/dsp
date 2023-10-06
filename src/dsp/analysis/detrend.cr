@@ -1,7 +1,7 @@
 require "linalg"
-require "json"
 require "./simple_regression"
 require "./ols_multiple_linear_regression"
+require "../enums/analysis/mode"
 
 module DSP::Analysis
   class Detrend
@@ -32,18 +32,28 @@ module DSP::Analysis
     # This method detrends the signal and returns it.
     # Returns: double[] Detrended signal
     # Throws: IllegalArgumentException – if node is not linear, constant or poly
-    def self.detrend_signal(signal : Array(Float64), mode : String = "linear", power : Int32 = 1) : Hash(Symbol, Array(Float64))
-      case mode
-      when "linear"
+    def self.apply(signal : Array(Float64), constant? : Bool = false) : Hash(Symbol, Array(Float64))
+      if !constant? 
         return linear_detrend(signal)
-      when "constant"
+      else 
         return constant_detrend(signal)
-      when "poly", "polynomial"
+      end
+
+    end
+
+    def self.apply(signal : Array(Float64), mode = DSP::Analysis::Mode::LINEAR, power : Int32 = 1) : Hash(Symbol, Array(Float64))
+      case mode
+      when DSP::Analysis::Mode::LINEAR
+        return linear_detrend(signal)
+      when DSP::Analysis::Mode::CONSTANT
+        return constant_detrend(signal)
+      when DSP::Analysis::Mode::POLYNOMIAL
         return polynomial_detrend(signal, power)
       else
         raise ArgumentError.new("Mode can only be linear, constant or poly")
       end
     end
+
 
     # This getter method to get the trend line fo the signal.
     # Returns:double[] Calculated trend line
@@ -51,7 +61,7 @@ module DSP::Analysis
     #     return @trendLine
     # end
 
-    def self.linear_detrend(signal : Array(Float64)) : Hash(Symbol, Array(Float64))
+    private def self.linear_detrend(signal : Array(Float64)) : Hash(Symbol, Array(Float64))
       output = Array(Float64).new(signal.size, 0.0)
       trend_line = Array(Float64).new(signal.size, 0.0)
 
@@ -73,10 +83,9 @@ module DSP::Analysis
       return {:detrended => output, :trend_line => trend_line}
     end
 
-    def self.polynomial_detrend(signal : Array(Float64), power : Int32) : Hash(Symbol, Array(Float64))
+    private def self.polynomial_detrend(signal : Array(Float64), power : Int32) : Hash(Symbol, Array(Float64))
       output = Array.new(signal.size, 0.0)
       x = generate_x(signal, power)
-      puts "X #{x}"
 
       sr = DSP::Analysis::OLSMultipleLinearRegression.new
       sr.no_intercept = true
@@ -97,7 +106,7 @@ module DSP::Analysis
       return {:detrended => output, :trend_line => trend_line}
     end
 
-    def self.constant_detrend(signal : Array(Float64)) : Hash(Symbol, Array(Float64))
+    private def self.constant_detrend(signal : Array(Float64)) : Hash(Symbol, Array(Float64))
       mean = find_mean(signal)
       return {:detrended => signal.map { |i| i - mean }, :trend_line => [mean]}
     end
@@ -130,12 +139,3 @@ module DSP::Analysis
     end
   end
 end
-
-json = File.open("/tmp/a.json") do |file|
-  JSON.parse(file)
-end
-
-x = Array(Float64).from_json(json["waveform"].to_json)
-r = DSP::Analysis::Detrend.polynomial_detrend(x, 40)
-
-# puts r
