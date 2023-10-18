@@ -105,9 +105,12 @@ module DSP::Analysis
           end
 
           x_aug[i][0] = 1.0
-          x[i].each_with_index do |value, j|
-            x_aug[i][j + 1] = value
-          end
+          # x[i].each_with_index do |value, j|
+          #   x_aug[i][j + 1] = value
+          # end
+          (0...n_vars).each { |z|
+            x_aug[i][z + 1] = x[i][z]
+          }
         end
 
         @x_matrix = LA::GMat.new(x_aug)
