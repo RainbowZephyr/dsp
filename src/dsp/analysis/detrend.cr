@@ -121,7 +121,7 @@ module DSP::Analysis
     end
 
     private def self.generate_x(signal : Array(Float64), power : Int32) : Array(Array(Float64))
-      x = Array(Array(Float64)).new(signal.size, Array(Float64).new(power + 1, 0.0))
+      x = Array(Array(Float64)).new(signal.size) {Array(Float64).new(power + 1, 0.0)}
       size : Float64 = signal.size.to_f
       (0...x.size).each do |i|
         (0..power).each do |j|
