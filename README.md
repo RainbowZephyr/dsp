@@ -34,7 +34,7 @@ inverse : Array(Complex) = DSP::Transforms::FFTPlanner.ifft(transformed)
 ```
 ### Detrend
 ```crystal
-include DSP
+require "dsp"
 
 # Linear
 waveform = [1,2,3,4]
@@ -42,6 +42,22 @@ hash = Analysis::Detrend.apply(waveform) # {:detrended => ...., :trend_line => .
 
 waveform = [1,2,3,4]
 hash = Analysis::Detrend.apply(waveform, DSP::Analysis::Mode::POLYNOMIAL, 15) # {:detrended => ...., :trend_line => ...}
+```
+
+### Integrals and Differentials
+```crystal
+require "dsp"
+
+# Integration
+waveform = [1,2,3,4]
+sample_rate = 5
+linear_factor = 1
+result : Array(Float64) = DSP::Signal::Integrate(waveform, sample_rate, linear_factor)
+
+waveform = [1,2,3,4]
+sample_rate = 5
+linear_factor = 1
+result : Array(Float64) = DSP::Signal::Differentiate(waveform, sample_rate, linear_factor)
 ```
 
 TODO: Write more usage instructions here

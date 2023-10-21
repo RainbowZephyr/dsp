@@ -11,6 +11,10 @@ crystal: 1.9.2
 
 license: MIT
 
+development_dependencies:
+  ishi:
+    github: toddsundsted/ishi
+
 dependencies:
   linalg:
     github: konovod/linalg
