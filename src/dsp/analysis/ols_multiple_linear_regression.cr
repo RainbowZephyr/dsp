@@ -1,3 +1,4 @@
+require "../lalgebra/qr_decomposition"
 module DSP::Analysis
   class OLSMultipleLinearRegression
     property :no_intercept
@@ -12,6 +13,8 @@ module DSP::Analysis
     @y_vector = LA::GMat.new(0, 0, Array(Float64).new)
 
     @x_matrix = LA::GMat.new(0, 0, Array(Float64).new)
+
+    @qr_decomposition : DSP::LAlgebra::QRDecomposition? = nil
 
     # Create an empty OLSMultipleLinearRegression instance.
     def initialize
@@ -115,11 +118,17 @@ module DSP::Analysis
 
         @x_matrix = LA::GMat.new(x_aug)
       end
+
+      @qr = DSP::LAlgebra::QRDecomposition.new(@x_matrix)
     end
 
-    def estimate_regression_params : Array(Float64)
-      a, r, pvt = @x_matrix.qr
-      return a.solvels(@y_vector).to_a
+    def estimate_regression_params() : Array(Float64)
+      return self.calculate_beta.to_a
     end
+
+    def calculate_beta() : LA::GMat
+      return @qr.not_nil!.get_solver.solve_vector(@y_vector)
+    end
+    
   end
 end
