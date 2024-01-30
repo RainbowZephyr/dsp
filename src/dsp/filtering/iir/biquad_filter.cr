@@ -26,7 +26,7 @@ abstract class BiquadFilter
   getter :critical_freq, :q, :sample_rate
 
   def initialize(@critical_freq : Float64, @q : Float64, @sample_rate : Float64)
-    verify_positive(@sample_rate)
+    DSP.verify_positive(@sample_rate)
     omega = BiquadFilter.omega(@critical_freq, @sample_rate)
 
     @a0, @a1, @a2, @b0, @b1, @b2 = compute_coefficients(omega)

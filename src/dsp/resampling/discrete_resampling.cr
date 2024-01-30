@@ -6,8 +6,8 @@ module DiscreteResampling
 
   def self.upsample(input : Array(Float64), sample_rate : Float64, upsample_factor : Int32, filter_order : Int32)
     raise ArgumentError.new("input size #{input.size} is less than four") if input.size < 4
-    verify_positive(upsample_factor)
-    verify_positive(sample_rate)
+    DSP.verify_positive(upsample_factor)
+    DSP.verify_positive(sample_rate)
 
     output = Array(Float64).new((upsample_factor * input.size).to_i, 0.0)
     input.each_index do |i|
@@ -32,8 +32,8 @@ module DiscreteResampling
 
   def self.downsample(input : Array(Float64), sample_rate : Float64, downsample_factor : Int32, filter_order : Int32, lowpass_cutoff : Float64)
     raise ArgumentError.new("input size #{input.size} is less than four") if input.size < 4
-    verify_positive(downsample_factor)
-    verify_positive(sample_rate)
+    DSP.verify_positive(downsample_factor)
+    DSP.verify_positive(sample_rate)
 
     target_srate = (sample_rate.to_f / downsample_factor)
     if lowpass_cutoff > (target_srate / 2.0)
