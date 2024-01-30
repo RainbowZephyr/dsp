@@ -20,7 +20,7 @@ module DSP
       verify_positive(sample_rate)
       @sample_rate = sample_rate
 
-      verify_even(order)
+      DSP.verify_even(order)
       @order = order
       size = @order + 1
 

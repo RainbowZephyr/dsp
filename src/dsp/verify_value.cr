@@ -1,19 +1,17 @@
 module DSP
+  class NonEvenError < Exception; end
 
-class NonEvenError < Exception; end
-
-def verify_even(value)
-  if (value % 2) != 0
-    raise NonEvenError.new("#{value} is not even")
+  def self.verify_even(value)
+    if (value % 2) != 0
+      raise NonEvenError.new("#{value} is not even")
+    end
   end
-end
 
-class NonPositiveError < Exception; end
+  class NonPositiveError < Exception; end
 
-def verify_positive(value)
-  if value <= 0
-    raise NonPositiveError.new("#{value} is not positive")
+  def self.verify_positive(value)
+    if value <= 0
+      raise NonPositiveError.new("#{value} is not positive")
+    end
   end
-end
-
 end
