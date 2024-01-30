@@ -17,7 +17,7 @@ module DSP
         raise ArgumentError.new(msg)
       end
 
-      verify_positive(sample_rate)
+      DSP.verify_positive(sample_rate)
       @sample_rate = sample_rate
 
       DSP.verify_even(order)
