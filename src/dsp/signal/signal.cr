@@ -8,7 +8,7 @@ class Sig
   getter :data, :sample_rate
 
   def initialize(@data : Array(Float64), @sample_rate : Float64)
-    verify_positive(@sample_rate)
+    DSP.verify_positive(@sample_rate)
 
     @extrema = Extrema.new
     @extrema_has_processed_samples = false

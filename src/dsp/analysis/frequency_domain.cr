@@ -7,7 +7,7 @@ module DSP
 # if specified in :fft_format (see FFT_FORMATS for valid values).
 class FrequencyDomain
   def initialize(@data : Array(Float64), @sample_rate : Float64)
-    verify_positive(@sample_rate)
+    DSP.verify_positive(@sample_rate)
 
     @fft_full = uninitialized Array(Complex)
     @fft_half = uninitialized Array(Complex)
