@@ -7,7 +7,7 @@ authors:
 
 description: Signal processing library
 
-crystal: 1.9.2
+crystal: 1.15.1
 
 license: MIT
 
